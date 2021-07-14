@@ -17,6 +17,9 @@ export default class Package extends BaseModel {
   @column()
   public name: string
 
+  @column()
+  public config: JSON
+
   @beforeCreate()
   public static async createUUID(model: Package) {
     if (!model.id) {

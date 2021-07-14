@@ -17,6 +17,9 @@ export default class Cluster extends BaseModel {
   @column()
   public region: string
 
+  @column()
+  public config: JSON
+
   @beforeCreate()
   public static async createUUID(model: Cluster) {
     if (!model.id) {
