@@ -18,6 +18,9 @@ export default class Cluster extends BaseModel {
   public region: string
 
   @column()
+  public name: string
+
+  @column()
   public config: JSON
 
   @beforeCreate()
