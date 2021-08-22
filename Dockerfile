@@ -9,8 +9,6 @@ RUN apk add libtool autoconf automake gcc build-base python3
 
 COPY package.json yarn.* ./
 
-COPY .env ./
-
 RUN apk add --no-cache git
 
 COPY . /home/node/app/
@@ -20,8 +18,6 @@ RUN chown -R node:node /home/node
 RUN yarn
 
 RUN yarn build
-
-COPY .env ./build
 
 USER node
 
