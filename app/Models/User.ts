@@ -2,6 +2,12 @@ import { DateTime } from 'luxon'
 import {BaseModel, beforeCreate, column} from '@ioc:Adonis/Lucid/Orm'
 import { v4 as uuid4 } from 'uuid'
 
+export enum UserType {
+  MASTER = "MASTER",
+  ADMIN = "ADMIN",
+  STAFF = "STAFF"
+}
+
 export default class User extends BaseModel {
   public static selfAssignPrimaryKey = true
 
@@ -22,6 +28,9 @@ export default class User extends BaseModel {
 
   @column()
   public password: string
+
+  @column()
+  public type: UserType
 
   @beforeCreate()
   public static async createUUID(model: User) {
