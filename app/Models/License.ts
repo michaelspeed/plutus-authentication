@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import {BaseModel, beforeCreate, BelongsTo, belongsTo, column} from '@ioc:Adonis/Lucid/Orm'
+import {BaseModel, beforeCreate, BelongsTo, belongsTo, column, HasMany, hasMany} from '@ioc:Adonis/Lucid/Orm'
 import { v4 as uuid4 } from 'uuid'
 import User from "App/Models/User";
 import Package from "App/Models/Package";
+import Cluster from "App/Models/Cluster";
 
 export enum LicenseClassType {
   LOCAL = "LOCAL",
@@ -35,11 +36,25 @@ export default class License extends BaseModel {
   @column()
   public licenseTimeType: LicenseTimeType
 
-  @belongsTo(() => User)
+  @belongsTo(() => User, {
+    foreignKey: 'owner'
+  })
   public owner: BelongsTo<typeof User>
 
-  @belongsTo(() => Package)
+  @belongsTo(() => Package, {
+    foreignKey: 'package'
+  })
   public package: BelongsTo<typeof Package>
+
+  @hasMany(() => User, {
+    foreignKey: 'employeeLicenseId'
+  })
+  public employees: HasMany<typeof User>
+
+  @belongsTo(() => Cluster, {
+    foreignKey: 'cluster'
+  })
+  public cluster: BelongsTo<typeof Cluster>
 
   @beforeCreate()
   public static async createUUID(model: License) {

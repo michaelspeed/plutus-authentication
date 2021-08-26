@@ -19,7 +19,9 @@ export default class PackageValidator extends BaseModel {
   @column()
   public shortValidator: string
 
-  @belongsTo(() => License)
+  @belongsTo(() => License, {
+    foreignKey: 'license'
+  })
   public license: BelongsTo<typeof License>
 
   @beforeCreate()
