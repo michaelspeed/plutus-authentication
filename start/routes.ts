@@ -26,4 +26,5 @@ Route.get('/', async () => {
 
 Route.group(() => {
   Route.get('/start-license', 'AuthenticationController.startLicense')
+  Route.post('/login', 'AuthenticationController.loginClient')
 }).prefix('/authentication')
