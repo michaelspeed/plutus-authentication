@@ -8,8 +8,11 @@ WORKDIR /home/node/app
 RUN apk add libtool autoconf automake gcc build-base python3
 
 COPY package.json yarn.* ./
+COPY prisma ./
 
 RUN apk add --no-cache git
+
+RUN npx prisma generate
 
 COPY . /home/node/app/
 
