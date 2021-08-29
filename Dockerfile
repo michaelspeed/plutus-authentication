@@ -10,6 +10,10 @@ RUN apk add libtool autoconf automake gcc build-base python3
 COPY package.json yarn.* ./
 COPY prisma ./
 
+RUN npm add -D prisma
+
+RUN npm add @prisma/client
+
 RUN apk add --no-cache git
 
 RUN npx prisma generate
