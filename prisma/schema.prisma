@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model administrators {
+  id         String    @id @default(uuid()) @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  username   String?   @db.VarChar(255)
+  email      String?   @db.VarChar(255)
+  password   String?   @db.VarChar(255)
+}
+
+model adonis_schema {
+  id             Int       @id @default(autoincrement()) @db.UnsignedInt
+  name           String    @db.VarChar(255)
+  batch          Int
+  migration_time DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model clusters {
+  id         String     @id @default(uuid()) @db.VarChar(255)
+  created_at DateTime?  @db.Timestamp(0)
+  updated_at DateTime?  @db.Timestamp(0)
+  region     String?    @db.VarChar(255)
+  config     Json?
+  name       String?    @db.Text
+  licenses   licenses[]
+}
+
+model licenses {
+  id                                      String                     @id @default(uuid()) @db.VarChar(255)
+  created_at                              DateTime?                  @db.Timestamp(0)
+  updated_at                              DateTime?                  @db.Timestamp(0)
+  licenseClassType                        licenses_licenseClassType?
+  licenseTimeType                         licenses_licenseTimeType?
+  owner                                   String?                    @db.VarChar(255)
+  package                                 String?                    @db.VarChar(255)
+  cluster                                 String?                    @db.VarChar(255)
+  employeeLicenseId                       String?                    @db.VarChar(255)
+  clusters                                clusters?                  @relation(fields: [cluster], references: [id])
+  users_licenses_employeeLicenseIdTousers users?                     @relation("licenses_employeeLicenseIdTousers", fields: [employeeLicenseId], references: [id])
+  users_licenses_ownerTousers             users?                     @relation("licenses_ownerTousers", fields: [owner], references: [id])
+  packages                                packages?                  @relation(fields: [package], references: [id])
+  package_validators                      package_validators[]
+
+  @@index([cluster], name: "licenses_cluster_foreign")
+  @@index([employeeLicenseId], name: "licenses_employeelicenseid_foreign")
+  @@index([owner], name: "licenses_owner_foreign")
+  @@index([package], name: "licenses_package_foreign")
+}
+
+model package_validators {
+  id             String    @id @default(uuid()) @db.VarChar(255)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+  validator      String?   @db.VarChar(255)
+  shortValidator String?   @db.VarChar(255)
+  license        String?   @db.VarChar(255)
+  licenses       licenses? @relation(fields: [license], references: [id])
+
+  @@index([license], name: "package_validators_license_foreign")
+}
+
+model packages {
+  id         String     @id @default(uuid()) @db.VarChar(255)
+  created_at DateTime?  @db.Timestamp(0)
+  updated_at DateTime?  @db.Timestamp(0)
+  name       String?    @db.VarChar(255)
+  config     Json?
+  licenses   licenses[]
+}
+
+model session {
+  id                 Int       @id @default(autoincrement()) @db.UnsignedInt
+  createdAt          DateTime? @db.DateTime(0)
+  updatedAt          DateTime? @db.DateTime(0)
+  expiresAt          DateTime? @db.DateTime(0)
+  handle             String?   @unique @db.VarChar(255)
+  hashedSessionToken String?   @db.Text
+  antiCSRFToken      String?   @db.Text
+  publicData         String?   @db.Text
+  privateData        String?   @db.Text
+  userId             String?   @db.VarChar(255)
+}
+
+model token {
+  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  createdAt   DateTime? @db.DateTime(0)
+  updatedAt   DateTime? @db.DateTime(0)
+  hashedToken String?   @db.Text
+  type        String?   @db.Text
+  sentTo      String?   @db.Text
+  userId      String?   @db.VarChar(255)
+}
+
+model users {
+  id                                         String     @id @default(uuid()) @db.VarChar(255)
+  created_at                                 DateTime?  @db.Timestamp(0)
+  updated_at                                 DateTime?  @db.Timestamp(0)
+  username                                   String?    @db.VarChar(255)
+  email                                      String?    @db.VarChar(255) @unique()
+  password                                   String?    @db.VarChar(255)
+  type                                       users_type @default(MASTER)
+  licenses_licenses_employeeLicenseIdTousers licenses[] @relation("licenses_employeeLicenseIdTousers")
+  licenses_licenses_ownerTousers             licenses[] @relation("licenses_ownerTousers")
+}
+
+enum licenses_licenseClassType {
+  LOCAL
+  CROSS
+  ONLINE
+}
+
+enum licenses_licenseTimeType {
+  MONTHLY
+  QUARTERLY
+  HALF
+  YEARLY
+}
+
+enum users_type {
+  MASTER
+  ADMIN
+  STAFF
+}
